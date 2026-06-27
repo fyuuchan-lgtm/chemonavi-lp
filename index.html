@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ケモナビβ | がん診療ガイドライン確認支援GPTs</title>
+  <meta name="description" content="ケモナビβは、がん診療ガイドラインを薬剤師が確認しやすい形に整理したGPTsです。CQ、推奨文、根拠、出典URL、確認日へのアクセスを補助します。">
+  <meta property="og:title" content="ケモナビβ | がん診療ガイドライン確認支援GPTs">
+  <meta property="og:description" content="ケモナビβは、がん診療ガイドラインを薬剤師が確認しやすい形に整理したGPTsです。CQ、推奨文、根拠、出典URL、確認日へのアクセスを補助します。">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./og-image.svg">
+  <meta property="og:image:alt" content="ケモナビβ">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ケモナビβ | がん診療ガイドライン確認支援GPTs">
+  <meta name="twitter:description" content="ケモナビβは、がん診療ガイドラインを薬剤師が確認しやすい形に整理したGPTsです。">
+  <meta name="twitter:image" content="./og-image.svg">
+  <style>
+    :root {
+      --ink: #17211b;
+      --muted: #4f5d56;
+      --line: #dfe6e1;
+      --paper: #fbfcfa;
+      --panel: #ffffff;
+      --green: #1f6f53;
+      --green-dark: #144833;
+      --gold: #b0842f;
+      --rose: #8b4c59;
+      --blue: #315f7a;
+      --soft-green: #edf6f1;
+      --soft-gold: #fbf5e7;
+      --soft-rose: #f8eef1;
+      --shadow: 0 16px 44px rgba(23, 33, 27, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, system-ui, sans-serif;
+      line-height: 1.75;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(223, 230, 225, 0.85);
+      background: rgba(251, 252, 250, 0.94);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav {
+      max-width: none;
+      margin: 0 auto;
+      padding: 12px clamp(16px, 2vw, 32px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 18px;
+      white-space: nowrap;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .nav-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 6px 12px;
+      border: 1px solid rgba(79, 93, 86, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      text-decoration: none;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+      border-color: var(--green-dark);
+      background: var(--green-dark);
+    }
+
+    .nav-links a:focus-visible {
+      outline: 2px solid var(--green-dark);
+      outline-offset: 2px;
+    }
+
+    .hero {
+      border-bottom: 1px solid var(--line);
+      background: #f4f8f5;
+    }
+
+    .hero-inner {
+      max-width: none;
+      margin: 0 auto;
+      min-height: 500px;
+      padding: 76px clamp(16px, 2vw, 32px) 56px;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--green);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 1280px;
+      font-size: 40px;
+      line-height: 1.14;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin: 22px 0 0;
+      max-width: 1080px;
+      color: #35443c;
+      font-size: 18px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 11px 18px;
+      border-radius: 7px;
+      border: 1px solid var(--green-dark);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .button.primary {
+      background: var(--green-dark);
+      color: #fff;
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--green-dark);
+    }
+
+    .chat-message {
+      max-width: 88%;
+      padding: 16px 18px;
+      font-size: 14px;
+      line-height: 1.78;
+    }
+
+    .chat-message.user {
+      justify-self: end;
+      border-radius: 22px;
+      background: #f3f4f6;
+      color: #16181d;
+    }
+
+    .chat-message.assistant {
+      justify-self: start;
+      max-width: 100%;
+      color: #f4f4f5;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 6px;
+      color: #9ca3af;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .chat-message p {
+      margin: 0;
+    }
+
+    .chat-message p + p {
+      margin-top: 12px;
+    }
+
+    .chat-message ul {
+      margin: 8px 0 0;
+      padding-left: 1.2em;
+    }
+
+    .chat-message li + li {
+      margin-top: 4px;
+    }
+
+    .chat-heading {
+      margin-top: 14px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .chat-heading:first-child {
+      margin-top: 0;
+    }
+
+    .thinking {
+      color: #a1a1aa;
+      font-size: 13px;
+    }
+
+    section {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-inner {
+      max-width: none;
+      margin: 0 auto;
+      padding: 64px clamp(16px, 2vw, 32px);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    .section-lead {
+      margin: 12px 0 0;
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .section-lead.full-width {
+      max-width: none;
+      width: 100%;
+    }
+
+    .guideline-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 30px;
+    }
+
+    .guideline-group,
+    .feature,
+    .example {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 20px;
+    }
+
+    .guideline-group h3,
+    .feature h3,
+    .example h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .guideline-group p,
+    .feature p,
+    .example p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .guideline-group.diagnostic {
+      background: var(--soft-green);
+    }
+
+    .guideline-group.supportive {
+      background: var(--soft-gold);
+    }
+
+    .line-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .line-list li {
+      padding: 9px 0;
+      border-top: 1px solid rgba(23, 33, 27, 0.10);
+    }
+
+    .line-list li:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 30px;
+    }
+
+    .feature strong {
+      display: block;
+      color: var(--green-dark);
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .examples {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 30px;
+    }
+
+    .example {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .example h3 {
+      padding: 18px 20px 0;
+    }
+
+    .example-body {
+      padding: 0 20px 20px;
+    }
+
+    .example-body p + p {
+      margin-top: 12px;
+    }
+
+    .example-source {
+      padding: 14px 20px;
+      border-top: 1px solid var(--line);
+      background: #f8faf8;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .example-table-wrap {
+      overflow-x: auto;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .example table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .example th,
+    .example td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .example th {
+      background: #f5f8f6;
+      color: var(--green-dark);
+      font-weight: 700;
+    }
+
+    .example tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .example.wide {
+      grid-column: 1 / -1;
+    }
+
+    .example-transcript {
+      max-height: 520px;
+      overflow-y: auto;
+      margin: 0 20px 20px;
+      padding: 18px;
+      border-radius: 8px;
+      background: #050505;
+      display: grid;
+      gap: 16px;
+    }
+
+    .example-transcript .chat-message.assistant p,
+    .example-transcript .chat-message.assistant li {
+      color: #f4f4f5;
+    }
+
+    .example-transcript .chat-message.user p,
+    .example-transcript .chat-message.user li {
+      color: #16181d;
+    }
+
+    .safety-band {
+      background: #f7faf8;
+    }
+
+    .notice {
+      display: grid;
+      grid-template-columns: 0.7fr 1.3fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .notice-box {
+      border-left: 5px solid var(--gold);
+      background: var(--soft-gold);
+      padding: 20px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .notice-box p {
+      margin: 0;
+    }
+
+    .cta {
+      background: var(--green-dark);
+      color: #fff;
+    }
+
+    .cta .section-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(320px, 1fr);
+      align-items: center;
+      gap: 40px;
+    }
+
+    .cta h2,
+    .cta p {
+      color: rgba(255, 255, 255, 0.82);
+      margin: 12px 0 0;
+      white-space: nowrap;
+    }
+
+    .cta .actions {
+      justify-content: flex-end;
+    }
+
+    .cta .button {
+      border-color: #fff;
+      color: #fff;
+    }
+
+    .cta .button.primary {
+      background: #fff;
+      color: var(--green-dark);
+    }
+
+    footer {
+      padding: 24px clamp(16px, 2vw, 32px);
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .hero-inner,
+      .notice,
+      .cta .section-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-inner {
+        min-height: auto;
+        padding-top: 56px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .guideline-grid,
+      .feature-grid,
+      .examples {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 10px 14px;
+      }
+
+      .cta h2,
+      .cta p {
+        white-space: normal;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .nav {
+        padding: 10px 16px;
+      }
+
+      .hero-inner,
+      .section-inner {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .lead {
+        font-size: 16px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 10px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="主要ナビゲーション">
+      <div class="brand">ケモナビβ</div>
+      <div class="nav-links">
+        <a href="#features">できること</a>
+        <a href="#guidelines">収録ガイドライン</a>
+        <a href="#safety">安全設計</a>
+        <a href="#examples">出力例</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <p class="eyebrow">がん領域の薬剤師向け 公開β</p>
+          <h1>ケモナビβは、がん薬物療法の確認業務を支援するGPTsです。</h1>
+          <p class="lead">
+            GPTsはChatGPTの中で使う専用の対話ツールです。ケモナビβは、CQ、推奨文、根拠、出典URL、確認日に戻りやすい形で、薬剤師の薬物療法確認業務を補助します。完成度は上げていますが、現場目線でさらに磨くため、がん領域の薬剤師さんからの感想・違和感・改善案を募集します。
+          </p>
+          <div class="actions">
+            <a class="button primary" href="#gpts-link-pending">ケモナビを使う</a>
+            <a class="button secondary" href="#x-feedback-pending">Xで感想を投稿する</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="section-inner">
+        <h2>できること</h2>
+        <p class="section-lead full-width">ケモナビは、がん薬物療法の確認業務を支援するツールです。必要な論点を整理し、ガイドラインの根拠へすぐ戻れる形で提示します。</p>
+        <div class="feature-grid">
+          <div class="feature">
+            <strong>01</strong>
+            <h3>CQと推奨文の確認</h3>
+            <p>CQ、推奨文、推奨の強さ、エビデンスレベルを確認できます。</p>
+          </div>
+          <div class="feature">
+            <strong>02</strong>
+            <h3>根拠へ戻る</h3>
+            <p>ガイドライン名、年版、該当CQ、出典URL、確認日を示します。</p>
+          </div>
+          <div class="feature">
+            <strong>03</strong>
+            <h3>情報不足時の聞き取り</h3>
+            <p>治療選択に必要な条件が不足している場合、候補薬を長く並べず確認事項を返します。</p>
+          </div>
+          <div class="feature">
+            <strong>04</strong>
+            <h3>学習・テスト作成</h3>
+            <p>1問ずつ解く学習モードと、配布用にまとめるテスト作成モードを使い分けます。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="guidelines">
+      <div class="section-inner">
+        <h2>収録ガイドライン</h2>
+        <div class="guideline-grid">
+          <div class="guideline-group diagnostic">
+            <h3>診療系</h3>
+            <ul class="line-list">
+              <li>乳癌診療ガイドライン2022</li>
+              <li>前立腺癌診療ガイドライン2023</li>
+              <li>大腸癌治療ガイドライン医師用2024</li>
+              <li>肺癌診療ガイドライン2025</li>
+            </ul>
+          </div>
+          <div class="guideline-group supportive">
+            <h3>支持療法・緩和</h3>
+            <ul class="line-list">
+              <li>G-CSF支持療法2022</li>
+              <li>制吐薬適正使用ガイドライン2023</li>
+              <li>制吐薬適正使用ガイドライン2024</li>
+              <li>がん疼痛の薬物療法に関するガイドライン2020</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="safety" class="safety-band">
+      <div class="section-inner notice">
+        <div>
+          <h2>安全設計</h2>
+          <p class="section-lead">ケモナビβは医療者の確認支援ツールです。診療判断や患者個別の最終判断は代替しません。β版のため、誤りや未対応が含まれる可能性があるので、最新原文も必ず確認してください。</p>
+        </div>
+        <div class="notice-box">
+          <p>がん種、病期、PS、前治療歴、バイオマーカー、臓器機能、有害事象歴などが不足している場合は、まず必要情報を確認します。ガイドラインにない内容は推測せず、根拠が確認できる範囲で回答します。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="examples">
+      <div class="section-inner">
+        <h2>実際の出力例</h2>
+        <div class="examples">
+          <article class="example wide">
+            <h3>大腸癌の分子標的薬</h3>
+            <div class="example-transcript" aria-label="大腸癌分子標的薬の実際の出力例">
+              <div class="chat-message user">
+                <span class="label">質問例</span>
+                <p>大腸癌の分子標的薬について知りたい</p>
+              </div>
+              <div class="chat-message assistant">
+                <p class="thinking">使用ナビ：ケモナビ</p>
+                <div class="chat-heading">【回答要約】</div>
+                <p>大腸癌の分子標的薬は、主に<strong>切除不能進行・再発大腸癌</strong>で、殺細胞性抗がん薬に上乗せ、または後方治療として検討されます。全体像は、まず <strong>血管新生阻害薬</strong>、<strong>抗EGFR抗体薬</strong>、<strong>後方治療で使う分子標的薬</strong>に分けて理解すると整理しやすいです。加えて、RAS/BRAF、MSI/MMR、HER2、CGPの実施状況が治療選択に関係します。</p>
+                <div class="chat-heading">【主な分類と位置づけ】</div>
+                <div class="example-table-wrap" aria-label="大腸癌分子標的薬の主な分類と位置づけ">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>分類</th>
+                        <th>代表的な位置づけ</th>
+                        <th>薬剤師が見るポイント</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>血管新生阻害薬</td>
+                        <td>切除不能進行・再発例で、化学療法に併用して検討される薬剤群。後方治療の前提治療歴にも含まれる</td>
+                        <td>高血圧、蛋白尿、出血・血栓リスク、創傷治癒遅延、消化管穿孔リスクを確認</td>
+                      </tr>
+                      <tr>
+                        <td>抗EGFR抗体薬</td>
+                        <td><strong>RAS野生型</strong>で検討される薬剤群。RAS変異例では適応判断が大きく変わる</td>
+                        <td>RAS/BRAF結果、原発部位、皮膚障害、低Mg血症、infusion reactionを確認</td>
+                      </tr>
+                      <tr>
+                        <td>レゴラフェニブ</td>
+                        <td>後方治療の選択肢として位置づけられる</td>
+                        <td>手足症候群、肝機能障害、高血圧、倦怠感、服薬継続性を確認</td>
+                      </tr>
+                      <tr>
+                        <td>FTD/TPI＋BEV</td>
+                        <td>後方治療で推奨度が高く整理されている選択肢</td>
+                        <td>骨髄抑制、投与スケジュール、BEV併用時の血圧・蛋白尿・出血リスクを確認</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="chat-heading">【分子プロファイルで押さえる軸】</div>
+                <p>大腸癌では、治療前または治療経過中に <strong>RAS、BRAF、MSI/MMR、HER2</strong> などの結果を確認します。特にRASは抗EGFR抗体薬の適否に直結します。BRAF、MSI-H/dMMR、HER2は、通常の血管新生阻害薬・抗EGFR抗体薬とは別の治療選択に関係するため、治療ラインや既治療歴とセットで確認します。周術期薬物療法前のバイオマーカーとして、RAS、BRAF、MSI/MMR検査が整理されています。</p>
+                <div class="chat-heading">【薬剤師として確認すること】</div>
+                <p>まず、治療ライン、前治療歴、RAS/BRAF、MSI/MMR、HER2、原発部位、PS、腎機能・肝機能・骨髄機能を確認します。血管新生阻害薬では出血・血栓、高血圧、蛋白尿、創傷治癒遅延を、抗EGFR抗体薬では皮膚障害、低Mg血症、infusion reactionを重点的に見ます。後方治療では、骨髄抑制、肝機能、血圧、服薬アドヒアランス、休薬・減量基準を事前に確認すると実務上安全です。</p>
+                <div class="chat-heading">【根拠】</div>
+                <p>大腸癌治療ガイドライン医師用 2024年版、CQ24「切除不能大腸癌に対する後方治療」、CQ26「切除不能大腸癌に対する包括的がんゲノムプロファイリング検査」、CQ09「周術期薬物療法前のバイオマーカー検査」。確認日：2026-05-18。</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="example wide">
+            <h3>肺癌 二次治療の聞き取りから回答まで</h3>
+            <div class="example-transcript" aria-label="肺癌二次治療の実際の出力例">
+              <div class="chat-message user">
+                <span class="label">質問例</span>
+                <p>ドライバー遺伝子変異陰性の進行非小細胞肺がんで、一次治療としてプラチナ併用化学療法＋免疫チェックポイント阻害薬を行いました。増悪後の二次治療は何が考えられますか？</p>
+              </div>
+              <div class="chat-message assistant">
+                <div class="chat-heading">【回答要約】</div>
+                <p>二次治療の候補は、<strong>病理型、一次治療の具体的レジメン、維持療法の有無、PS、臓器機能、一次治療での有害事象</strong>によって変わります。現時点の情報だけでは、具体的な薬剤候補は提示せず、まず治療選択に必要な情報を確認します。</p>
+                <div class="chat-heading">【まず確認したい情報】</div>
+                <ul>
+                  <li>病理型：非扁平上皮癌か、扁平上皮癌か</li>
+                  <li>一次治療の具体的レジメン：例）カルボプラチン＋ペメトレキセド＋ペムブロリズマブ等</li>
+                  <li>維持療法の内容と、どの治療中に増悪したか</li>
+                  <li>PS</li>
+                  <li>年齢</li>
+                  <li>腎機能・肝機能・骨髄機能</li>
+                  <li>出血リスク、血栓リスク、高血圧、蛋白尿の有無</li>
+                  <li>一次治療中の重篤なirAE、間質性肺疾患、末梢神経障害などの有無</li>
+                </ul>
+              </div>
+              <div class="chat-message user">
+                <span class="label">追加情報</span>
+                <p>非扁平上皮癌です。<br>一次治療はカルボプラチン＋ペメトレキセド＋ペムブロリズマブで、維持療法はペメトレキセド＋ペムブロリズマブです。<br>現在PS 1、68歳です。<br>腎機能・肝機能・骨髄機能は大きな問題ありません。<br>出血・血栓リスク、高血圧、蛋白尿はありません。<br>一次治療中に重篤なirAEや間質性肺疾患はありませんでした。</p>
+              </div>
+              <div class="chat-message assistant">
+                <p class="thinking">使用ナビ：ケモナビ</p>
+                <div class="chat-heading">【回答要約】</div>
+                <p>この背景なら、二次治療では<strong>ドセタキセル＋ラムシルマブ療法を主な検討候補</strong>にしやすいです。理由は、PS 1、68歳、腎・肝・骨髄機能に大きな問題がなく、ラムシルマブで問題になりやすい出血・血栓リスク、高血圧、蛋白尿が現時点でないためです。</p>
+                <p>ただし、一次治療で<strong>ペメトレキセド＋ペムブロリズマブ維持中に増悪</strong>しているため、ペメトレキセド単剤や免疫チェックポイント阻害薬単剤を単純に再提示する状況ではありません。</p>
+                <div class="chat-heading">【根拠】</div>
+                <p>肺癌診療ガイドライン2025年版、NSCLC IV期 二次治療 CQ69では、一次治療耐性または進行後のPS 0-2例に対して、ドセタキセル±ラムシルマブ、ペメトレキセド、S-1、ナブパクリタキセルが強く推奨されています。確認日：2026-05-18。<br>同CQ70では、ラムシルマブ適応となるPS 0-1例でドセタキセル＋ラムシルマブ併用療法を弱く推奨し、75歳以上およびPS 2では行わないよう弱く推奨されています。確認日：2026-05-18。</p>
+                <div class="chat-heading">【治療選択の考え方】</div>
+                <div class="example-table-wrap" aria-label="肺癌二次治療の選択肢">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>選択肢</th>
+                        <th>この症例での位置づけ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>ドセタキセル＋ラムシルマブ</strong></td>
+                        <td>最も検討しやすい候補。PS 1、68歳、出血・血栓・高血圧・蛋白尿なしという背景は、ラムシルマブ併用を検討しやすい条件に合う。</td>
+                      </tr>
+                      <tr>
+                        <td>ドセタキセル単剤</td>
+                        <td>ラムシルマブ併用が難しい場合の選択肢として考える。骨髄抑制や全身状態を見て判断。</td>
+                      </tr>
+                      <tr>
+                        <td>S-1単剤</td>
+                        <td>ドセタキセル系が難しい場合などの代替候補として検討。</td>
+                      </tr>
+                      <tr>
+                        <td>ナブパクリタキセル単剤</td>
+                        <td>末梢神経障害や骨髄抑制などを見ながら、代替候補として検討。</td>
+                      </tr>
+                      <tr>
+                        <td>ペメトレキセド単剤</td>
+                        <td>非扁平上皮癌では選択肢に含まれるが、本症例では一次治療・維持療法で使用中に増悪しているため、再使用の意義は慎重に評価する。</td>
+                      </tr>
+                      <tr>
+                        <td>免疫チェックポイント阻害薬単剤</td>
+                        <td>二次治療で強く推奨される記載は「免疫チェックポイント阻害薬未使用例」が対象です。本症例はペムブロリズマブ既使用のため、そのまま当てはめない。</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="chat-heading">【薬剤師として確認すること】</div>
+                <ul>
+                  <li><strong>ラムシルマブ適格性</strong>：喀血、出血リスク、血栓塞栓症、血圧、蛋白尿、創傷治癒遅延、血小板数を再確認する。</li>
+                  <li><strong>ドセタキセル毒性</strong>：好中球減少、発熱性好中球減少、浮腫、末梢神経障害、口内炎、倦怠感を確認する。</li>
+                  <li><strong>G-CSF予防投与</strong>：G-CSF支持療法2022では、進行非小細胞肺がんで該当レジメンはドセタキセル＋ラムシルマブ療法とされ、一次予防投与を弱く推奨と整理されています。</li>
+                  <li><strong>前治療の増悪状況</strong>：ペメトレキセド維持中の増悪であれば、ペメトレキセド再使用の意義は低めに考え、他系統を中心に検討する。</li>
+                  <li><strong>分子診断の再確認</strong>：EGFR、ALK、ROS1、BRAF、MET、RET、KRAS、HER2、PD-L1、NTRK、MSI、TMBなどの検査状況を確認し、見落としがないか確認する。肺癌診療ガイドライン2025年版 CQ26では、薬物療法を考慮するNSCLCで主要遺伝子検査とPD-L1 IHCを強く推奨しています。</li>
+                </ul>
+                <div class="chat-heading">【実務的なまとめ】</div>
+                <p>この症例では、<strong>ドセタキセル＋ラムシルマブを中心に検討</strong>し、血管新生阻害薬関連リスクと骨髄抑制リスクを処方前に詰める、という整理が実務的です。ペメトレキセドやペムブロリズマブは既に使用中に増悪しているため、二次治療候補としては優先度を下げて考えます。</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="example">
+            <h3>実際の出力例3：テスト作成モード</h3>
+            <div class="example-body">
+              <p><strong>問題</strong><br>乳がん薬物療法におけるG-CSF一次予防投与について、正しいものを2つ選んでください。</p>
+              <p><strong>選択肢の例</strong><br>B. G-CSF一次予防投与はFN発症率を低下させる。<br>C. TC療法、FEC100療法、DTX100療法では特に勧められる。</p>
+              <p><strong>正解</strong><br>B、C</p>
+              <p><strong>解説要点</strong><br>乳がん薬物療法においてG-CSF一次予防投与は強く推奨され、FN発症率を低下させることが示されています。</p>
+            </div>
+            <div class="example-source">根拠：G-CSF支持療法 2022年10月改訂 第2版、CQ01。確認日：2026-05-19。</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="section-inner">
+        <div>
+          <h2>ケモナビβを使って、Xで感想を教えてください。</h2>
+          <p>感想、違和感、改善案はリプ、引用RP、DMで受け付けます。指摘は今後の改善に反映します。</p>
+        </div>
+        <div class="actions">
+          <a class="button primary" href="#gpts-link-pending">ケモナビを使う</a>
+          <a class="button secondary" href="#x-feedback-pending">X固定ポストへ</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    ケモナビβは診療判断を代替しません。医療者による確認作業を支援するための情報整理・検索補助です。
+  </footer>
+</body>
+</html>
